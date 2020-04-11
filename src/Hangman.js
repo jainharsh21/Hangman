@@ -17,7 +17,12 @@ class Hangman extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { nWrong: 0, guessed: new Set(), answer: "apple" };
+    this.state = {
+      nWrong: 0,
+      guessed: new Set(),
+      answer: "apple",
+      isOver: false,
+    };
     this.handleGuess = this.handleGuess.bind(this);
   }
 
@@ -36,9 +41,14 @@ class Hangman extends Component {
   */
   handleGuess(evt) {
     let ltr = evt.target.value;
+
     this.setState((st) => ({
       guessed: st.guessed.add(ltr),
       nWrong: st.nWrong + (st.answer.includes(ltr) ? 0 : 1),
+      isOver:
+        st.nWrong === this.props.maxWrong - 1 && !st.answer.includes(ltr)
+          ? true
+          : false,
     }));
   }
 
@@ -63,10 +73,17 @@ class Hangman extends Component {
       <div className="Hangman">
         <h1>Hangman</h1>
         <img src={this.props.images[this.state.nWrong]} />
-        <p className="Hangman-word">{this.guessedWord()}</p>
-
+        {this.state.isOver ? (
+          <p className="Hangman-word">{this.state.answer}</p>
+        ) : (
+          <p className="Hangman-word">{this.guessedWord()}</p>
+        )}
         <p>{`Guess left : ${leftGuess}`}</p>
-        <p className="Hangman-btns">{this.generateButtons()}</p>
+        {this.state.isOver ? (
+          <p>You Lose!</p>
+        ) : (
+          <p className="Hangman-btns">{this.generateButtons()}</p>
+        )}
       </div>
     );
   }
